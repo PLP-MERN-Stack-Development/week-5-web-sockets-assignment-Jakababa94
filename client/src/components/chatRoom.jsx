@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Hash, Users, Settings, Search, Smile, Phone, Video, MoreHorizontal } from 'lucide-react';
-import { useSocket, Message, User, Room } from '../hooks/useSocket';
+import { useSocket} from '../hooks/useSocket';
 import { MessageBubble } from './MessageBubble';
 import { UserList } from './UserList';
 import { RoomList } from './RoomList';
@@ -8,7 +8,8 @@ import { EmojiPicker } from './EmojiPicker';
 import { NotificationManager } from './NotificationManager';
 
 /**
- * @param {{ currentUser: import('../hooks/useSocket').User }} props
+ * @param {Object} props
+ * @param {Object} props.currentUser - The current user object
  */
 export const ChatRoom = ({ currentUser }) => {
   const {
@@ -27,10 +28,10 @@ export const ChatRoom = ({ currentUser }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showUserList, setShowUserList] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [typingTimeout, setTypingTimeout] = useState(null);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messageInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef(null);
+  const messageInputRef = useRef(null);
 
   const currentRoomData = rooms.find(r => r.id === currentRoom);
   const roomMessages = messages[currentRoom] || [];

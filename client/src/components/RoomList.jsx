@@ -1,6 +1,5 @@
 import React from 'react';
 import { Hash, Lock, Volume2 } from 'lucide-react';
-import { Room } from '../hooks/useSocket';
 import PropTypes from 'prop-types';
 
 export const RoomList = ({

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { MoreHorizontal, Heart, ThumbsUp, Laugh, Angry, Salad as Sad, Sunrise as Surprise } from 'lucide-react';
-import { Message } from '../hooks/useSocket';
 
 /* PropTypes can be used below for prop validation if desired */
 

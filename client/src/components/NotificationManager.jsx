@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bell, X } from 'lucide-react';
+import { useSocket } from '../hooks/useSocket';
 
 /**
  * @typedef {Object} Notification
@@ -10,9 +11,10 @@ import { Bell, X } from 'lucide-react';
  * @property {Date} timestamp
  */
 
-export const NotificationManager= () => {
+export const NotificationManager = () => {
   const [notifications, setNotifications] = useState([]);
   const [permission, setPermission] = useState('default');
+  const { currentUser, notificationEmitter } = useSocket();
 
   useEffect(() => {
     // Request notification permission
@@ -57,29 +59,26 @@ export const NotificationManager= () => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // This would be called by the socket events
+  // Listen for socket events from the useSocket hook
   useEffect(() => {
+    if (!currentUser || !notificationEmitter) return;
+
     const handleNewMessage = (data) => {
       showNotification('New Message', `${data.username}: ${data.content}`, 'message');
-      socket.on('new_message', handleNewMessage);
     };
 
-    const handleUserJoined = (data) => {
-      showNotification('User Joined', `${data.username} joined the chat`, 'user_joined');
-      socket.on('user_joined', handleUserJoined);
+    const handlePrivateMessage = (data) => {
+      showNotification('Private Message', `${data.senderName}: ${data.content}`, 'message');
     };
 
-    const handleUserLeft = (data) => {
-      showNotification('User Left', `${data.username} left the chat`, 'user_left');
-      socket.on('user_left', handleUserLeft);
-    };  
+    notificationEmitter.on('new_message', handleNewMessage);
+    notificationEmitter.on('private_message', handlePrivateMessage);
 
     return () => {
-      socket.off('new_message', handleNewMessage);
-      socket.off('user_joined', handleUserJoined);
-      socket.off('user_left', handleUserLeft);
+      notificationEmitter.off('new_message', handleNewMessage);
+      notificationEmitter.off('private_message', handlePrivateMessage);
     };
-  }, []);
+  }, [currentUser, notificationEmitter]);
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">

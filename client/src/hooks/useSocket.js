@@ -1,6 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
+// Custom event emitter for notifications
+const notificationEmitter = {
+  listeners: {},
+  on(event, callback) {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(callback);
+  },
+  emit(event, data) {
+    if (this.listeners[event]) {
+      this.listeners[event].forEach(callback => callback(data));
+    }
+  },
+  off(event, callback) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
+    }
+  }
+};
+
 export const useSocket = () => {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
@@ -59,10 +80,27 @@ export const useSocket = () => {
         ...prev,
         [roomId]: [...(prev[roomId] || []), message]
       }));
+      
+      // Emit notification for new message
+      if (message.userId !== socket.id) {
+        notificationEmitter.emit('new_message', {
+          username: message.username,
+          content: message.content,
+          roomId
+        });
+      }
     });
 
     socket.on('private_message', (message) => {
       setPrivateMessages(prev => [...prev, message]);
+      
+      // Emit notification for private message
+      if (message.senderId !== socket.id) {
+        notificationEmitter.emit('private_message', {
+          senderName: message.senderName,
+          content: message.content
+        });
+      }
     });
 
     socket.on('user_typing', ({ userId, username, isTyping }) => {
@@ -152,6 +190,7 @@ export const useSocket = () => {
     sendPrivateMessage,
     joinRoom,
     setTyping,
-    addReaction
+    addReaction,
+    notificationEmitter
   };
 };
