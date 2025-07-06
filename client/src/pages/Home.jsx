@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getRooms, createRoom, getMessages, socket } from "../services/backendInt";
-import ChatRoom from "../components/chatRoom";
+import ChatRoom from "../components/ChatRoom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -23,11 +23,11 @@ export default function Home({ user }){
     }, []);
 
       // Create a room
-    const handleCreateRoom = async () => {
-    const trimmedName = newRoomName.trim();
-    if (!trimmedName) return;
+     const handleCreateRoom = async () => {
+     const trimmedName = newRoomName.trim();
+     if (!trimmedName) return;
 
-    // Check for duplicates
+     // Check for duplicates
     const duplicate = rooms.find(r => r.name.toLowerCase() === trimmedName.toLowerCase());
     if (duplicate) {
         toast.error("Room with that name already exists.");
@@ -79,7 +79,7 @@ export default function Home({ user }){
                         />
                         <button
                             onClick={handleCreateRoom}
-                            className="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded"
+                            className="w-full bg-blue-600 hover:bg-blue-300 p-2 rounded"
                         >
                             Create Room
                         </button>
